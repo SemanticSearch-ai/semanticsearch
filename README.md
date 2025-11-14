@@ -19,7 +19,7 @@ Before deployment, create a Vectorize index as described in step 4 below.
 3. Run `wrangler login` to login to your Cloudflare account in wrangler
 4. Create a Vectorize index for semantic search:
    ```bash
-   wrangler vectorize create semantic-search --dimensions=384 --metric=cosine
+   wrangler vectorize create semantic-search --dimensions=256 --metric=cosine
    ```
 5. Run `wrangler deploy` to publish the API to Cloudflare Workers
 

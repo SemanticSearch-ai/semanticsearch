@@ -8,8 +8,8 @@ interface VectorizeMatch {
 
 export class CloudflareSemanticSearchAdapter {
   private readonly env: Env
-  private readonly modelName = '@cf/baai/bge-small-en-v1.5'
-  private readonly dimension = 384 // bge-small-en-v1.5 embedding dimension
+  private readonly modelName = '@cf/google/embeddinggemma-300m'
+  private readonly dimension = 256 // truncate to 256 dims for MRL compatibility
 
   constructor(env: Env) {
     this.env = env
@@ -27,7 +27,18 @@ export class CloudflareSemanticSearchAdapter {
         throw new Error(`Invalid response from AI.run: ${JSON.stringify(response)}`)
       }
       
-      return response.data[0]
+      const embedding = response.data[0]
+
+      if (!Array.isArray(embedding)) {
+        throw new Error(`Embedding payload is not an array: ${JSON.stringify(embedding)}`)
+      }
+
+      if (embedding.length < this.dimension) {
+        throw new Error(`Embedding length ${embedding.length} is smaller than required dimension ${this.dimension}`)
+      }
+
+      // embeddinggemma outputs 768 dims; truncate to 256 to stay within MRL cap
+      return embedding.slice(0, this.dimension)
     } catch (error) {
       console.error('Embedding generation error:', error)
       const message = error instanceof Error
