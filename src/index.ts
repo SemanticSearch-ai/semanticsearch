@@ -26,7 +26,7 @@ app.use('/v1/documents/:id', requireWriter({ methods: ['DELETE'] }))
 const documentSchema = z.object({
   id: z.string().optional(),
   text: z.string(),
-  metadata: z.record(z.any()).optional()
+  metadata: z.record(z.string(), z.any()).optional()
 })
 
 const searchQuerySchema = z.object({
