@@ -6,7 +6,7 @@ import { z } from 'zod'
 import { DocumentEndpoints } from './application/endpoints/documentEndpoints'
 import { DocumentService } from './services/documentService'
 import { CloudflareDocumentRepository } from './infrastructure/semanticSearch/cloudflareDocumentRepository'
-import { auth } from './middleware/auth'
+import { auth, requireWriter } from './middleware/auth'
 import { Env } from './types'
 
 const app = new OpenAPIHono<{ Bindings: Env }>()
@@ -20,6 +20,8 @@ const createDependencies = (env: Env) => {
 app.use('/*', cors())
 
 app.use('/v1/*', auth())
+app.use('/v1/documents', requireWriter({ methods: ['POST'] }))
+app.use('/v1/documents/:id', requireWriter({ methods: ['DELETE'] }))
 
 const documentSchema = z.object({
   id: z.string().optional(),

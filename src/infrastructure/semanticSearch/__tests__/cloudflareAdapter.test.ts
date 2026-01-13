@@ -26,14 +26,14 @@ describe('CloudflareSemanticSearchAdapter', () => {
   describe('generateEmbedding', () => {
     it('should generate embedding for text', async () => {
       const text = 'test text'
-      const embedding = [0.1, 0.2, 0.3]
+      const embedding = Array.from({ length: 300 }, (_, index) => index / 1000)
       const mockRun = mockEnv.AI.run as jest.Mock
       mockRun.mockResolvedValue({ data: [embedding] })
 
       const result = await adapter.generateEmbedding(text)
 
-      expect(result).toEqual(embedding)
-      expect(mockRun).toHaveBeenCalledWith('@cf/baai/bge-small-en-v1.5', { text: [text] })
+      expect(result).toEqual(embedding.slice(0, 256))
+      expect(mockRun).toHaveBeenCalledWith('@cf/google/embeddinggemma-300m', { text: [text] })
     })
 
     it('should handle invalid AI response', async () => {

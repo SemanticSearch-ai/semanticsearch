@@ -21,7 +21,11 @@ export class CloudflareSemanticSearchAdapter {
         throw new Error(`AI.run is not a function. AI binding type: ${typeof this.env.AI}, available properties: ${Object.keys(this.env.AI)}`)
       }
 
-      const response = await this.env.AI.run(this.modelName, { text: [text] })
+      // embeddinggemma is not yet listed in workers-types, so cast to satisfy the current typings
+      const response = await (this.env.AI as any).run(
+        this.modelName,
+        { text: [text] }
+      )
       
       if (!response || !response.data || !Array.isArray(response.data)) {
         throw new Error(`Invalid response from AI.run: ${JSON.stringify(response)}`)

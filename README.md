@@ -23,9 +23,24 @@ Before deployment, create a Vectorize index as described in step 4 below.
    ```
 5. Run `wrangler deploy` to publish the API to Cloudflare Workers
 
-Once deployed, set the API key by updating the `API_KEY` environment variable.
+Once deployed, set your writer API key via the `API_KEY_WRITER` secret (the legacy `API_KEY` binding still works and is treated as a writer key). Optionally create `API_KEY_READER` for search-only clients.
 
 ## Usage
+
+### API keys & permissions
+
+- Writer keys (configured via `API_KEY_WRITER` or the legacy `API_KEY`) are required for mutating endpoints such as `POST /v1/documents` and `DELETE /v1/documents/:id`.
+- Reader keys (configured via `API_KEY_READER`) may call read/search endpoints (`GET /v1/documents/:id`, `POST /v1/search`). Writer keys are also accepted on those routes.
+- To issue multiple keys of a given type, separate them with commas or newlines when setting the secret (e.g. `wrangler secret put API_KEY_READER`).
+- Keep writer keys in trusted environments (servers/CI); reader keys are safe to embed in public clients.
+
+If a reader key invokes a write endpoint the API responds with:
+
+```json
+{
+  "error": "Writer key required for this endpoint"
+}
+```
 
 The API provides the following endpoints for managing and searching documents:
 
@@ -33,7 +48,7 @@ The API provides the following endpoints for managing and searching documents:
 ```bash
 curl -X POST "https://your-worker.workers.dev/v1/documents" \
   -H "Content-Type: application/json" \
-  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Authorization: Bearer YOUR_WRITER_KEY" \
   -d '{
     "text": "This is a sample document for semantic search",
     "id": "document-id",
@@ -54,7 +69,7 @@ Response:
 ### Retrieve a document
 ```bash
 curl -X GET "https://your-worker.workers.dev/v1/documents/{document-id}" \
-  -H "Authorization: Bearer YOUR_API_KEY"
+  -H "Authorization: Bearer YOUR_ACCESS_KEY"
 ```
 
 Response:
@@ -72,7 +87,7 @@ Response:
 ### Delete a document
 ```bash
 curl -X DELETE "https://your-worker.workers.dev/v1/documents/{document-id}" \
-  -H "Authorization: Bearer YOUR_API_KEY"
+  -H "Authorization: Bearer YOUR_WRITER_KEY"
 ```
 
 Response:
@@ -86,7 +101,7 @@ Response:
 ```bash
 curl -X POST "https://your-worker.workers.dev/v1/search" \
   -H "Content-Type: application/json" \
-  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Authorization: Bearer YOUR_ACCESS_KEY" \
   -d '{
     "query": "sample document",
     "limit": 10
@@ -110,7 +125,7 @@ Response:
 }
 ```
 
-All endpoints require authentication using a Bearer token in the Authorization header. Replace `YOUR_API_KEY` with your actual API key.
+All endpoints require a Bearer token in the Authorization header. Replace `YOUR_WRITER_KEY` with a writer key for mutating routes and `YOUR_ACCESS_KEY` with either a reader or writer key for read/search routes.
 
 ## Development
 

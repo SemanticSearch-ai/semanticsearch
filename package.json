@@ -8,10 +8,10 @@
 		"dev": "wrangler dev",
 		"start": "wrangler dev",
 		"cf-typegen": "wrangler types",
-		"test": "jest",
-		"test:watch": "jest --watch",
-		"test:service": "jest src/services/__tests__",
-		"test:adapter": "jest src/infrastructure/*/__tests__"
+		"test": "node --no-webstorage ./node_modules/jest/bin/jest.js",
+		"test:watch": "node --no-webstorage ./node_modules/jest/bin/jest.js --watch",
+		"test:service": "node --no-webstorage ./node_modules/jest/bin/jest.js src/services/__tests__",
+		"test:adapter": "node --no-webstorage ./node_modules/jest/bin/jest.js src/infrastructure/*/__tests__"
 	},
 	"dependencies": {
 		"@hono/swagger-ui": "^0.5.0",
