@@ -3,8 +3,9 @@
  * Reindex script for semantic-search demo
  *
  * Usage:
- *   pnpm reindex           # Uses API_KEY_WRITER from .env
- *   pnpm reindex:clean     # Delete existing docs first
+ *   pnpm reindex                              # Local dev (http://localhost:8787)
+ *   pnpm reindex --clean                      # Delete existing docs first
+ *   pnpm reindex --url https://demo.semanticsearch.ai   # Custom API URL
  *
  * This script:
  *   1. Reads seed data from scripts/seed-data.json
@@ -32,15 +33,64 @@ interface SeedDocument {
   metadata?: DocumentMetadata
 }
 
-const API_URL = process.env.API_URL
-const API_KEY = process.env.API_KEY || process.env.API_KEY_WRITER
+// Allowlist of valid API hosts to prevent SSRF
+const ALLOWED_HOSTS = [
+  'localhost',
+  '127.0.0.1',
+  'demo.semanticsearch.ai',
+  'api.semanticsearch.ai'
+]
 
-if (!API_URL) {
-  console.error('Error: API_URL environment variable is required')
-  console.error('       Set it explicitly to prevent accidental production changes')
-  console.error('       Example: API_URL=http://localhost:8787')
-  process.exit(1)
+// Validate URL against allowlist (SSRF protection)
+function validateUrl(urlValue: string): string {
+  try {
+    const parsed = new URL(urlValue)
+
+    // Only allow http/https protocols
+    if (!['http:', 'https:'].includes(parsed.protocol)) {
+      console.error(`Error: URL must use http: or https: protocol`)
+      process.exit(1)
+    }
+
+    // Check against allowlist
+    if (!ALLOWED_HOSTS.includes(parsed.hostname)) {
+      console.error(`Error: URL host '${parsed.hostname}' not in allowlist`)
+      console.error(`Allowed hosts: ${ALLOWED_HOSTS.join(', ')}`)
+      process.exit(1)
+    }
+
+    return urlValue
+  } catch {
+    console.error(`Error: Invalid URL format: ${urlValue}`)
+    process.exit(1)
+  }
 }
+
+// Parse --url argument or use default
+function getApiUrl(): string {
+  const args = process.argv.slice(2)
+  const urlIndex = args.indexOf('--url')
+
+  if (urlIndex !== -1) {
+    const urlValue = args[urlIndex + 1]
+
+    // Check if --url is missing a value or has another flag as value
+    if (!urlValue || urlValue.startsWith('--')) {
+      console.error('Error: --url flag requires a URL value')
+      console.error('Usage: pnpm reindex --url https://demo.semanticsearch.ai')
+      process.exit(1)
+    }
+
+    return validateUrl(urlValue)
+  }
+
+  // Default: validate env var or use localhost
+  const defaultUrl = process.env.API_URL || 'http://localhost:8787'
+  return validateUrl(defaultUrl)
+}
+
+const API_URL = getApiUrl()
+const API_KEY = process.env.API_KEY || process.env.API_KEY_WRITER
 
 if (!API_KEY) {
   console.error('Error: API_KEY or API_KEY_WRITER environment variable is required')
@@ -51,29 +101,52 @@ if (!API_KEY) {
 const SEED_DATA_PATH = path.join(__dirname, 'seed-data.json')
 
 async function loadSeedData(): Promise<SeedDocument[]> {
-  const raw = fs.readFileSync(SEED_DATA_PATH, 'utf-8')
-  return JSON.parse(raw) as SeedDocument[]
+  try {
+    const raw = fs.readFileSync(SEED_DATA_PATH, 'utf-8')
+    const data = JSON.parse(raw)
+
+    if (!Array.isArray(data)) {
+      throw new Error('Seed data must be an array of documents')
+    }
+
+    return data as SeedDocument[]
+  } catch (error) {
+    if (error instanceof SyntaxError) {
+      console.error(`Error: Failed to parse ${SEED_DATA_PATH}`)
+      console.error(`       JSON syntax error: ${error.message}`)
+    } else if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
+      console.error(`Error: Seed data file not found: ${SEED_DATA_PATH}`)
+    } else {
+      console.error(`Error loading seed data: ${error instanceof Error ? error.message : String(error)}`)
+    }
+    process.exit(1)
+  }
 }
 
 async function deleteDocument(id: string): Promise<boolean> {
   const url = `${API_URL}/v1/documents/${encodeURIComponent(id)}`
 
-  const res = await fetch(url, {
-    method: 'DELETE',
-    headers: {
-      Authorization: `Bearer ${API_KEY}`
-    }
-  })
+  try {
+    const res = await fetch(url, {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${API_KEY}`
+      }
+    })
 
-  if (res.ok) {
-    console.log(`  ✓ Deleted: ${id}`)
-    return true
-  } else if (res.status === 404) {
-    console.log(`  - Not found (skip): ${id}`)
-    return true
-  } else {
-    const text = await res.text()
-    console.error(`  ✗ Failed to delete ${id}: ${res.status} ${text}`)
+    if (res.ok) {
+      console.log(`  ✓ Deleted: ${id}`)
+      return true
+    } else if (res.status === 404) {
+      console.log(`  - Not found (skip): ${id}`)
+      return true
+    } else {
+      const text = await res.text()
+      console.error(`  ✗ Failed to delete ${id}: ${res.status} ${text}`)
+      return false
+    }
+  } catch (error) {
+    console.error(`  ✗ Network error deleting ${id}: ${error instanceof Error ? error.message : String(error)}`)
     return false
   }
 }
@@ -81,21 +154,26 @@ async function deleteDocument(id: string): Promise<boolean> {
 async function indexDocument(doc: SeedDocument): Promise<boolean> {
   const url = `${API_URL}/v1/documents`
 
-  const res = await fetch(url, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${API_KEY}`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(doc)
-  })
+  try {
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${API_KEY}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(doc)
+    })
 
-  if (res.ok) {
-    console.log(`  ✓ Indexed: ${doc.id}`)
-    return true
-  } else {
-    const text = await res.text()
-    console.error(`  ✗ Failed to index ${doc.id}: ${res.status} ${text}`)
+    if (res.ok) {
+      console.log(`  ✓ Indexed: ${doc.id}`)
+      return true
+    } else {
+      const text = await res.text()
+      console.error(`  ✗ Failed to index ${doc.id}: ${res.status} ${text}`)
+      return false
+    }
+  } catch (error) {
+    console.error(`  ✗ Network error indexing ${doc.id}: ${error instanceof Error ? error.message : String(error)}`)
     return false
   }
 }
