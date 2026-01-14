@@ -17,12 +17,9 @@ enabled = true
 # - https://developers.cloudflare.com/workers/configuration/secrets/
 
 [vars]
-# Writer keys can index/update/delete data. Set via `wrangler secret put API_KEY_WRITER` in production.
-API_KEY_WRITER = "YOUR_WRITER_KEY"
-# Optional: dedicated reader keys for search-only clients. Supports comma-separated lists.
-API_KEY_READER = "YOUR_READER_KEY"
-# Legacy fallback for deployments that still expect `API_KEY`. If provided, it is treated as a writer key.
-API_KEY = "YOUR_WRITER_KEY"
+# API keys are loaded from .env file locally, and set via `wrangler secret put` in production.
+# See .env.example for the format.
+# DO NOT put real keys here - they will be committed to git!
 
 # Bind the Workers AI model catalog. Run machine learning models, powered by serverless GPUs, on Cloudflare’s global network
 # Docs: https://developers.cloudflare.com/workers/wrangler/configuration/#workers-ai

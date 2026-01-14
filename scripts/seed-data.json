@@ -1,0 +1,102 @@
+[
+  {
+    "id": "ai-assistant-en",
+    "text": "AI assistants are transforming how we work and learn. They can answer questions, write code, summarize documents, and help with creative tasks. The key is understanding context and intent, not just matching keywords.",
+    "metadata": { "topic": "ai-assistant", "lang": "en" }
+  },
+  {
+    "id": "ai-assistant-zh",
+    "text": "人工智能助手正在改变我们的工作和学习方式。它们可以回答问题、编写代码、总结文档，并协助完成创意任务。关键在于理解上下文和意图，而不仅仅是匹配关键词。",
+    "metadata": { "topic": "ai-assistant", "lang": "zh" }
+  },
+  {
+    "id": "ai-assistant-ja",
+    "text": "AIアシスタントは私たちの働き方や学び方を変革しています。質問に答えたり、コードを書いたり、文書を要約したり、クリエイティブな作業を手伝ったりできます。重要なのは、キーワードのマッチングではなく、文脈と意図を理解することです。",
+    "metadata": { "topic": "ai-assistant", "lang": "ja" }
+  },
+  {
+    "id": "ai-assistant-ko",
+    "text": "AI 어시스턴트는 우리의 일하고 배우는 방식을 변화시키고 있습니다. 질문에 답하고, 코드를 작성하고, 문서를 요약하고, 창의적인 작업을 도울 수 있습니다. 핵심은 키워드 매칭이 아닌 맥락과 의도를 이해하는 것입니다.",
+    "metadata": { "topic": "ai-assistant", "lang": "ko" }
+  },
+  {
+    "id": "coffee-culture-en",
+    "text": "Coffee culture varies dramatically around the world. In Italy, espresso is a quick ritual at the bar. In Japan, kissaten offer slow, meditative pour-over experiences. Each culture has transformed this simple beverage into something uniquely meaningful.",
+    "metadata": { "topic": "coffee", "lang": "en" }
+  },
+  {
+    "id": "coffee-culture-zh",
+    "text": "咖啡文化在世界各地差异巨大。在意大利，浓缩咖啡是吧台前的快速仪式。在日本，喫茶店提供缓慢而冥想式的手冲体验。每种文化都将这种简单的饮品转化为独特而有意义的东西。",
+    "metadata": { "topic": "coffee", "lang": "zh" }
+  },
+  {
+    "id": "coffee-culture-ja",
+    "text": "コーヒー文化は世界中で大きく異なります。イタリアではエスプレッソはバーでの素早い儀式です。日本では喫茶店がゆっくりとした瞑想的なハンドドリップ体験を提供します。それぞれの文化がこのシンプルな飲み物を独自の意味あるものに変えています。",
+    "metadata": { "topic": "coffee", "lang": "ja" }
+  },
+  {
+    "id": "coffee-culture-ko",
+    "text": "커피 문화는 전 세계적으로 크게 다릅니다. 이탈리아에서 에스프레소는 바에서의 빠른 의식입니다. 일본에서는 킷사텐이 느리고 명상적인 핸드드립 경험을 제공합니다. 각 문화는 이 단순한 음료를 독특하고 의미 있는 것으로 변화시켰습니다.",
+    "metadata": { "topic": "coffee", "lang": "ko" }
+  },
+  {
+    "id": "remote-work-en",
+    "text": "Remote work has redefined the boundaries between office and home. Video calls replaced meeting rooms, and Slack messages replaced hallway conversations. The challenge now is maintaining team culture and preventing burnout in a distributed world.",
+    "metadata": { "topic": "remote-work", "lang": "en" }
+  },
+  {
+    "id": "remote-work-zh",
+    "text": "远程办公重新定义了办公室和家庭之间的界限。视频通话取代了会议室，Slack消息取代了走廊闲聊。现在的挑战是在分布式世界中维持团队文化并防止倦怠。",
+    "metadata": { "topic": "remote-work", "lang": "zh" }
+  },
+  {
+    "id": "remote-work-ja",
+    "text": "リモートワークはオフィスと自宅の境界を再定義しました。ビデオ通話が会議室に取って代わり、Slackメッセージが廊下での会話に取って代わりました。今の課題は、分散した世界でチーム文化を維持し、燃え尽き症候群を防ぐことです。",
+    "metadata": { "topic": "remote-work", "lang": "ja" }
+  },
+  {
+    "id": "remote-work-ko",
+    "text": "원격 근무는 사무실과 가정 사이의 경계를 재정의했습니다. 화상 통화가 회의실을 대체했고, Slack 메시지가 복도 대화를 대체했습니다. 이제 과제는 분산된 세계에서 팀 문화를 유지하고 번아웃을 방지하는 것입니다.",
+    "metadata": { "topic": "remote-work", "lang": "ko" }
+  },
+  {
+    "id": "sustainable-city-en",
+    "text": "Sustainable cities prioritize public transit, green spaces, and renewable energy. Copenhagen leads with bicycle infrastructure, while Singapore innovates with vertical gardens. The goal is creating livable urban environments for future generations.",
+    "metadata": { "topic": "sustainability", "lang": "en" }
+  },
+  {
+    "id": "sustainable-city-zh",
+    "text": "可持续城市优先考虑公共交通、绿地和可再生能源。哥本哈根以自行车基础设施领先，新加坡则以垂直花园进行创新。目标是为子孙后代创造宜居的城市环境。",
+    "metadata": { "topic": "sustainability", "lang": "zh" }
+  },
+  {
+    "id": "sustainable-city-ja",
+    "text": "持続可能な都市は公共交通機関、緑地、再生可能エネルギーを優先します。コペンハーゲンは自転車インフラでリードし、シンガポールは垂直庭園で革新しています。目標は将来の世代のために住みやすい都市環境を作ることです。",
+    "metadata": { "topic": "sustainability", "lang": "ja" }
+  },
+  {
+    "id": "sustainable-city-ko",
+    "text": "지속 가능한 도시는 대중교통, 녹지 공간, 재생 에너지를 우선시합니다. 코펜하겐은 자전거 인프라로 선두를 달리고, 싱가포르는 수직 정원으로 혁신합니다. 목표는 미래 세대를 위한 살기 좋은 도시 환경을 만드는 것입니다.",
+    "metadata": { "topic": "sustainability", "lang": "ko" }
+  },
+  {
+    "id": "cooking-umami-en",
+    "text": "Umami, the fifth taste, creates depth and satisfaction in dishes. Parmesan cheese, soy sauce, tomatoes, and mushrooms are all rich in glutamates. Understanding umami helps home cooks create restaurant-quality meals.",
+    "metadata": { "topic": "cooking", "lang": "en" }
+  },
+  {
+    "id": "cooking-umami-zh",
+    "text": "鲜味，第五种味道，为菜肴创造深度和满足感。帕玛森奶酪、酱油、番茄和蘑菇都富含谷氨酸。理解鲜味有助于家庭厨师做出餐厅级别的美食。",
+    "metadata": { "topic": "cooking", "lang": "zh" }
+  },
+  {
+    "id": "cooking-umami-ja",
+    "text": "うま味は第五の味覚として、料理に深みと満足感を与えます。パルメザンチーズ、醤油、トマト、キノコはすべてグルタミン酸が豊富です。うま味を理解することで、家庭料理でもレストラン品質の食事が作れます。",
+    "metadata": { "topic": "cooking", "lang": "ja" }
+  },
+  {
+    "id": "cooking-umami-ko",
+    "text": "감칠맛, 다섯 번째 맛은 요리에 깊이와 만족감을 만들어냅니다. 파르메산 치즈, 간장, 토마토, 버섯은 모두 글루타메이트가 풍부합니다. 감칠맛을 이해하면 가정 요리사도 레스토랑 수준의 요리를 만들 수 있습니다.",
+    "metadata": { "topic": "cooking", "lang": "ko" }
+  }
+]

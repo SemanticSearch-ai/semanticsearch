@@ -11,7 +11,9 @@
 		"test": "node --no-webstorage ./node_modules/jest/bin/jest.js",
 		"test:watch": "node --no-webstorage ./node_modules/jest/bin/jest.js --watch",
 		"test:service": "node --no-webstorage ./node_modules/jest/bin/jest.js src/services/__tests__",
-		"test:adapter": "node --no-webstorage ./node_modules/jest/bin/jest.js src/infrastructure/*/__tests__"
+		"test:adapter": "node --no-webstorage ./node_modules/jest/bin/jest.js src/infrastructure/*/__tests__",
+		"reindex": "npx ts-node scripts/reindex.ts",
+		"reindex:clean": "npx ts-node scripts/reindex.ts --clean"
 	},
 	"dependencies": {
 		"@hono/swagger-ui": "^0.5.3",
@@ -23,9 +25,11 @@
 	},
 	"devDependencies": {
 		"@cloudflare/workers-types": "^4.20260113.0",
+		"@types/dotenv": "^8.2.3",
 		"@types/jest": "^30.0.0",
 		"@types/node": "25.0.8",
 		"@types/service-worker-mock": "^2.0.4",
+		"dotenv": "^17.2.3",
 		"jest": "^30.2.0",
 		"ts-jest": "^29.4.6",
 		"ts-node": "^10.9.2",

@@ -26,11 +26,11 @@ export class CloudflareSemanticSearchAdapter {
         this.modelName,
         { text: [text] }
       )
-      
+
       if (!response || !response.data || !Array.isArray(response.data)) {
         throw new Error(`Invalid response from AI.run: ${JSON.stringify(response)}`)
       }
-      
+
       const embedding = response.data[0]
 
       if (!Array.isArray(embedding)) {
