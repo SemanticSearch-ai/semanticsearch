@@ -3,36 +3,39 @@
 	"version": "0.0.1",
 	"private": true,
 	"type": "module",
+	"engines": {
+		"node": ">=22"
+	},
 	"scripts": {
 		"deploy": "wrangler deploy",
 		"dev": "wrangler dev",
 		"start": "wrangler dev",
 		"cf-typegen": "wrangler types",
-		"test": "node --no-webstorage ./node_modules/jest/bin/jest.js",
-		"test:watch": "node --no-webstorage ./node_modules/jest/bin/jest.js --watch",
-		"test:service": "node --no-webstorage ./node_modules/jest/bin/jest.js src/services/__tests__",
-		"test:adapter": "node --no-webstorage ./node_modules/jest/bin/jest.js src/infrastructure/*/__tests__",
+		"test": "node ./node_modules/jest/bin/jest.js",
+		"test:watch": "node ./node_modules/jest/bin/jest.js --watch",
+		"test:service": "node ./node_modules/jest/bin/jest.js src/services/__tests__",
+		"test:adapter": "node ./node_modules/jest/bin/jest.js src/infrastructure/*/__tests__",
 		"reindex": "npx ts-node scripts/reindex.ts",
 		"reindex:clean": "npx ts-node scripts/reindex.ts --clean"
 	},
 	"dependencies": {
-		"@hono/swagger-ui": "^0.5.3",
-		"@hono/zod-openapi": "^1.2.0",
-		"chanfana": "^3.0.0",
-		"hono": "^4.11.4",
-		"nanoid": "^5.1.6",
-		"zod": "^4.3.5"
+		"@hono/swagger-ui": "^0.6.1",
+		"@hono/zod-openapi": "^1.4.0",
+		"chanfana": "^3.3.0",
+		"hono": "^4.12.23",
+		"nanoid": "^5.1.11",
+		"zod": "^4.4.3"
 	},
 	"devDependencies": {
-		"@cloudflare/workers-types": "^4.20260113.0",
+		"@cloudflare/workers-types": "^4.20260528.1",
 		"@types/dotenv": "^8.2.3",
 		"@types/jest": "^30.0.0",
-		"@types/node": "25.0.8",
+		"@types/node": "25.9.1",
 		"@types/service-worker-mock": "^2.0.4",
-		"dotenv": "^17.2.3",
-		"jest": "^30.2.0",
-		"ts-jest": "^29.4.6",
+		"dotenv": "^17.4.2",
+		"jest": "^30.4.2",
+		"ts-jest": "^29.4.11",
 		"ts-node": "^10.9.2",
-		"wrangler": "^4.59.1"
+		"wrangler": "^4.95.0"
 	}
 }
