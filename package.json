@@ -27,7 +27,7 @@
 		"zod": "^4.4.3"
 	},
 	"devDependencies": {
-		"@cloudflare/workers-types": "^4.20260528.1",
+		"@cloudflare/workers-types": "^4.20260603.1",
 		"@types/dotenv": "^8.2.3",
 		"@types/jest": "^30.0.0",
 		"@types/node": "25.9.1",
@@ -36,6 +36,6 @@
 		"jest": "^30.4.2",
 		"ts-jest": "^29.4.11",
 		"ts-node": "^10.9.2",
-		"wrangler": "^4.95.0"
+		"wrangler": "^4.97.0"
 	}
 }
