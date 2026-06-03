@@ -8,11 +8,17 @@ interface VectorizeMatch {
 
 export class CloudflareSemanticSearchAdapter {
   private readonly env: Env
-  private readonly modelName = '@cf/google/embeddinggemma-300m'
-  private readonly dimension = 256 // truncate to 256 dims for MRL compatibility
+  private readonly modelName: string
+  private readonly dimension: number
 
   constructor(env: Env) {
     this.env = env
+    // Model + output dimension are configured per-deployment via Wrangler vars,
+    // so one codebase can serve multiple Vectorize indexes (e.g. the demo on
+    // embeddinggemma-300m/256 and the blog on qwen3-embedding-0.6b/1024).
+    this.modelName = env.EMBEDDING_MODEL || '@cf/google/embeddinggemma-300m'
+    const configuredDim = parseInt(String(env.EMBEDDING_DIM ?? ''), 10)
+    this.dimension = Number.isFinite(configuredDim) && configuredDim > 0 ? configuredDim : 256
   }
 
   async generateEmbedding(text: string): Promise<number[]> {
@@ -21,7 +27,7 @@ export class CloudflareSemanticSearchAdapter {
         throw new Error(`AI.run is not a function. AI binding type: ${typeof this.env.AI}, available properties: ${Object.keys(this.env.AI)}`)
       }
 
-      // embeddinggemma is not yet listed in workers-types, so cast to satisfy the current typings
+      // the embedding model may not be listed in workers-types, so cast to satisfy the current typings
       const response = await (this.env.AI as any).run(
         this.modelName,
         { text: [text] }
@@ -41,7 +47,8 @@ export class CloudflareSemanticSearchAdapter {
         throw new Error(`Embedding length ${embedding.length} is smaller than required dimension ${this.dimension}`)
       }
 
-      // embeddinggemma outputs 768 dims; truncate to 256 to stay within MRL cap
+      // Slice to the configured dimension: full vector for native-size indexes,
+      // or an MRL-truncated prefix (e.g. embeddinggemma 768 -> 256) for smaller ones.
       return embedding.slice(0, this.dimension)
     } catch (error) {
       console.error('Embedding generation error:', error)

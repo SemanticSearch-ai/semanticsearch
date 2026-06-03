@@ -16,7 +16,10 @@ describe('CloudflareSemanticSearchAdapter', () => {
       } as any,
       AI: {
         run: jest.fn()
-      } as any
+      } as any,
+      // Blog deployment config: qwen3-embedding-0.6b at its native 1024 dims.
+      EMBEDDING_MODEL: '@cf/qwen/qwen3-embedding-0.6b',
+      EMBEDDING_DIM: '1024'
     } as jest.Mocked<Env>
 
     adapter = new CloudflareSemanticSearchAdapter(mockEnv)
@@ -26,14 +29,41 @@ describe('CloudflareSemanticSearchAdapter', () => {
   describe('generateEmbedding', () => {
     it('should generate embedding for text', async () => {
       const text = 'test text'
-      const embedding = Array.from({ length: 300 }, (_, index) => index / 1000)
+      const embedding = Array.from({ length: 1024 }, (_, index) => index / 1000)
       const mockRun = mockEnv.AI.run as jest.Mock
       mockRun.mockResolvedValue({ data: [embedding] })
 
       const result = await adapter.generateEmbedding(text)
 
+      expect(result).toEqual(embedding)
+      expect(result).toHaveLength(1024)
+      expect(mockRun).toHaveBeenCalledWith('@cf/qwen/qwen3-embedding-0.6b', { text: [text] })
+    })
+
+    it('should fall back to embeddinggemma-300m at 256 dims when no embedding env vars are set', async () => {
+      const defaultEnv = {
+        VECTORIZE: {
+          insert: jest.fn(),
+          upsert: jest.fn(),
+          query: jest.fn(),
+          getByIds: jest.fn(),
+          deleteByIds: jest.fn()
+        } as any,
+        AI: {
+          run: jest.fn()
+        } as any
+      } as jest.Mocked<Env>
+      const defaultAdapter = new CloudflareSemanticSearchAdapter(defaultEnv)
+      // embeddinggemma-300m outputs 768 dims; the adapter must truncate to the default 256.
+      const embedding = Array.from({ length: 768 }, (_, index) => index / 1000)
+      const mockRun = defaultEnv.AI.run as jest.Mock
+      mockRun.mockResolvedValue({ data: [embedding] })
+
+      const result = await defaultAdapter.generateEmbedding('test text')
+
       expect(result).toEqual(embedding.slice(0, 256))
-      expect(mockRun).toHaveBeenCalledWith('@cf/google/embeddinggemma-300m', { text: [text] })
+      expect(result).toHaveLength(256)
+      expect(mockRun).toHaveBeenCalledWith('@cf/google/embeddinggemma-300m', { text: ['test text'] })
     })
 
     it('should handle invalid AI response', async () => {
