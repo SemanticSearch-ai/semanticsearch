@@ -115,3 +115,30 @@ index_name = "semantic-search"
 # [[services]]
 # binding = "MY_SERVICE"
 # service = "my-service"
+
+# ---------------------------------------------------------------------------
+# Blog deployment (www.oldcai.com semantic search).
+# Deploy with:  wrangler deploy --env blog
+# Named environments do NOT inherit top-level bindings, so AI / Vectorize /
+# observability are redeclared here. Uses the dedicated `search-oldcai-com`
+# index and qwen3-embedding-0.6b at its native 1024 dims.
+# Before the first blog deploy, create the index (1024 dims to match the
+# model, cosine to match the default index):
+#   wrangler vectorize create search-oldcai-com --dimensions=1024 --metric=cosine
+# ---------------------------------------------------------------------------
+[env.blog]
+name = "search-oldcai-com"
+
+[env.blog.observability]
+enabled = true
+
+[env.blog.ai]
+binding = "AI"
+
+[[env.blog.vectorize]]
+binding = "VECTORIZE"
+index_name = "search-oldcai-com"
+
+[env.blog.vars]
+EMBEDDING_MODEL = "@cf/qwen/qwen3-embedding-0.6b"
+EMBEDDING_DIM = "1024"
