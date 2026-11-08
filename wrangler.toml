@@ -20,6 +20,12 @@ enabled = true
 # API keys are loaded from .env file locally, and set via `wrangler secret put` in production.
 # See .env.example for the format.
 # DO NOT put real keys here - they will be committed to git!
+#
+# No EMBEDDING_MODEL is set here, so this worker uses the code default
+# (@cf/google/embeddinggemma-2, truncated to 256 dims). The `semantic-search` index was filled with
+# embeddinggemma-300m vectors, which are not comparable: after deploying this worker, re-embed it
+# (`pnpm reindex --clean --url <worker URL>` covers scripts/seed-data.json only; re-post any
+# documents added through the API).
 
 # Bind the Workers AI model catalog. Run machine learning models, powered by serverless GPUs, on Cloudflare’s global network
 # Docs: https://developers.cloudflare.com/workers/wrangler/configuration/#workers-ai
