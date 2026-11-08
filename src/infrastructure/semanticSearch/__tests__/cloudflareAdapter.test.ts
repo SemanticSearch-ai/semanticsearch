@@ -40,7 +40,7 @@ describe('CloudflareSemanticSearchAdapter', () => {
       expect(mockRun).toHaveBeenCalledWith('@cf/qwen/qwen3-embedding-0.6b', { text: [text] })
     })
 
-    it('should fall back to embeddinggemma-300m at 256 dims when no embedding env vars are set', async () => {
+    it('should fall back to embeddinggemma-2 at 256 dims when no embedding env vars are set', async () => {
       const defaultEnv = {
         VECTORIZE: {
           insert: jest.fn(),
@@ -54,16 +54,16 @@ describe('CloudflareSemanticSearchAdapter', () => {
         } as any
       } as jest.Mocked<Env>
       const defaultAdapter = new CloudflareSemanticSearchAdapter(defaultEnv)
-      // embeddinggemma-300m outputs 768 dims; the adapter must truncate to the default 256.
+      // embeddinggemma-2 outputs 768 dims as [{ embedding, meta_info }]; the adapter must truncate to the default 256.
       const embedding = Array.from({ length: 768 }, (_, index) => index / 1000)
       const mockRun = defaultEnv.AI.run as jest.Mock
-      mockRun.mockResolvedValue({ data: [embedding] })
+      mockRun.mockResolvedValue([{ embedding, meta_info: { prompt_tokens: 2 } }])
 
       const result = await defaultAdapter.generateEmbedding('test text')
 
       expect(result).toEqual(embedding.slice(0, 256))
       expect(result).toHaveLength(256)
-      expect(mockRun).toHaveBeenCalledWith('@cf/google/embeddinggemma-300m', { text: ['test text'] })
+      expect(mockRun).toHaveBeenCalledWith('@cf/google/embeddinggemma-2', { text: ['test text'] })
     })
 
     it('should handle invalid AI response', async () => {
@@ -74,6 +74,17 @@ describe('CloudflareSemanticSearchAdapter', () => {
       
       await expect(adapter.generateEmbedding('test')).rejects.toThrow('Invalid response from AI.run')
       
+      consoleErrorSpy.mockRestore()
+    })
+
+    it('should reject an array response whose items carry no embedding', async () => {
+      const mockRun = mockEnv.AI.run as jest.Mock
+      mockRun.mockResolvedValue([{ meta_info: {} }])
+
+      const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {})
+
+      await expect(adapter.generateEmbedding('test')).rejects.toThrow('Invalid response from AI.run')
+
       consoleErrorSpy.mockRestore()
     })
   })

@@ -6,6 +6,31 @@ interface VectorizeMatch {
   metadata?: Record<string, any>
 }
 
+/**
+ * Workers AI embedding models answer in two shapes:
+ *  - `{ data: number[][], shape }` (embeddinggemma-300m, qwen3-embedding, bge-*)
+ *  - `[{ embedding: number[], meta_info }]` (embeddinggemma-2)
+ * Return the first vector from either, or throw a payload-free error.
+ */
+function extractEmbedding(response: unknown): number[] {
+  const first: unknown = Array.isArray(response)
+    ? (response[0] as { embedding?: unknown } | undefined)?.embedding
+    : Array.isArray((response as { data?: unknown } | null | undefined)?.data)
+      ? (response as { data: unknown[] }).data[0]
+      : undefined
+
+  if (!Array.isArray(first) || !first.every((value) => typeof value === 'number')) {
+    const shape = Array.isArray(response)
+      ? `array(${response.length})`
+      : response && typeof response === 'object'
+        ? `object{${Object.keys(response).join(',')}}`
+        : typeof response
+    throw new Error(`Invalid response from AI.run: no embedding vector found (response shape: ${shape})`)
+  }
+
+  return first as number[]
+}
+
 export class CloudflareSemanticSearchAdapter {
   private readonly env: Env
   private readonly modelName: string
@@ -15,8 +40,8 @@ export class CloudflareSemanticSearchAdapter {
     this.env = env
     // Model + output dimension are configured per-deployment via Wrangler vars,
     // so one codebase can serve multiple Vectorize indexes (e.g. the demo on
-    // embeddinggemma-300m/256 and the blog on qwen3-embedding-0.6b/1024).
-    this.modelName = env.EMBEDDING_MODEL || '@cf/google/embeddinggemma-300m'
+    // embeddinggemma-2/256 and the blog on qwen3-embedding-0.6b/1024).
+    this.modelName = env.EMBEDDING_MODEL || '@cf/google/embeddinggemma-2'
     const configuredDim = parseInt(String(env.EMBEDDING_DIM ?? ''), 10)
     this.dimension = Number.isFinite(configuredDim) && configuredDim > 0 ? configuredDim : 256
   }
@@ -33,22 +58,14 @@ export class CloudflareSemanticSearchAdapter {
         { text: [text] }
       )
 
-      if (!response || !response.data || !Array.isArray(response.data)) {
-        throw new Error(`Invalid response from AI.run: ${JSON.stringify(response)}`)
-      }
-
-      const embedding = response.data[0]
-
-      if (!Array.isArray(embedding)) {
-        throw new Error(`Embedding payload is not an array: ${JSON.stringify(embedding)}`)
-      }
+      const embedding = extractEmbedding(response)
 
       if (embedding.length < this.dimension) {
         throw new Error(`Embedding length ${embedding.length} is smaller than required dimension ${this.dimension}`)
       }
 
       // Slice to the configured dimension: full vector for native-size indexes,
-      // or an MRL-truncated prefix (e.g. embeddinggemma 768 -> 256) for smaller ones.
+      // or an MRL-truncated prefix (e.g. embeddinggemma-2 768 -> 256) for smaller ones.
       return embedding.slice(0, this.dimension)
     } catch (error) {
       console.error('Embedding generation error:', error)
