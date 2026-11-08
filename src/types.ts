@@ -14,7 +14,7 @@ export interface Env {
    */
   API_KEY_READER?: string;
   /**
-   * Workers AI text-embedding model id. Defaults to '@cf/google/embeddinggemma-300m'.
+   * Workers AI text-embedding model id. Defaults to '@cf/google/embeddinggemma-2' (768 dims native, truncated to EMBEDDING_DIM).
    * Override per-deployment via Wrangler vars (e.g. '@cf/qwen/qwen3-embedding-0.6b' for the blog).
    */
   EMBEDDING_MODEL?: string;

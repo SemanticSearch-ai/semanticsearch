@@ -23,6 +23,8 @@ Before deployment, create a Vectorize index as described in step 4 below.
    ```
 5. Run `wrangler deploy` to publish the API to Cloudflare Workers
 
+   The default embedding model is `@cf/google/embeddinggemma-2` (768 dims, truncated to 256). Vectors from different embedding models are not comparable, so an index filled with another model (e.g. `embeddinggemma-300m`) must be re-embedded after deploying: `pnpm reindex --clean --url <your worker URL>` re-posts only the documents in `scripts/seed-data.json`; documents added through the API must be re-posted separately.
+
 Once deployed, set your writer API key via the `API_KEY_WRITER` secret (the legacy `API_KEY` binding still works and is treated as a writer key). Optionally create `API_KEY_READER` for search-only clients.
 
 ## Usage
